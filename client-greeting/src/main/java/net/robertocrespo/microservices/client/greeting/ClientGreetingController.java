@@ -5,13 +5,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 
 /**
  * Client controller, fetches User info from the microservice via
@@ -25,10 +23,9 @@ public class ClientGreetingController {
 	@Autowired
 	protected ClientGreetingService helloWorldService;
 
-	protected Logger logger = Logger.getLogger(ClientGreetingController.class
-			.getName());
+	protected Logger logger = Logger.getLogger(ClientGreetingController.class.getName());
 
-	//constructor
+	// constructor
 	public ClientGreetingController(ClientGreetingService helloWorldService) {
 		this.helloWorldService = helloWorldService;
 	}
@@ -37,35 +34,55 @@ public class ClientGreetingController {
 	public String goHome() {
 		return "index";
 	}
-	
+
 	@RequestMapping("/greeting/{name}")
 	public String greeting(Model model, @PathVariable("name") String name) {
-	
+		Greeting greeting = null;
+
 		logger.info("greeting() invoked: " + name);
 
-		Greeting greeting = helloWorldService.greeting(name);
+	    greeting = helloWorldService.greeting(name);
 		
 		logger.info("greeting() found: " + greeting.getContent());
-	
+
 		model.addAttribute("greeting", greeting.getContent());
-	
+
 		return "greeting";
-		
+
 	}
-	
+
 	@RequestMapping("/greetingFuture/{name}")
-	public String greetingFuture(Model model, @PathVariable("name") String name) throws InterruptedException, ExecutionException {
-	
+	public String greetingFuture(Model model, @PathVariable("name") String name)
+			throws InterruptedException, ExecutionException {
+
 		logger.info("greetingFuture() invoked: " + name);
-				
+
 		Future<Greeting> greeting = helloWorldService.greetingFuture(name);
-		
+
 		logger.info("greetingFuture() found: " + greeting.get().getContent());
-	
+
 		model.addAttribute("greeting", greeting.get().getContent());
-	
+
 		return "greeting";
-		
+
 	}
 	
+	@RequestMapping("/greetingbatch/{iterations}")
+	public String greetingBatch(Model model, @PathVariable("iterations") int num) {
+		Greeting greeting = null;
+
+		for (int i = 0; i < num; i++) {
+
+		 greeting = helloWorldService.greeting("Rob");
+		 
+		}
+
+		logger.info("greeting() found: " + greeting.getContent());
+
+		model.addAttribute("greeting", greeting.getContent());
+
+		return "greeting";
+
+	}
+
 }

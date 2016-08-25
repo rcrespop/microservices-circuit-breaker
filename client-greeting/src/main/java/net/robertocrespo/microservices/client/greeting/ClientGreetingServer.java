@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableDiscoveryClient
 @EnableCircuitBreaker
 @ComponentScan(useDefaultFilters = false) // Disable component scanner ...
+
 public class ClientGreetingServer {
 
 	/**
