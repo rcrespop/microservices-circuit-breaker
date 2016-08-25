@@ -1,12 +1,12 @@
 package net.robertocrespo.microservices.client.greeting;
 
 import java.util.concurrent.ExecutionException;
+
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,9 +57,7 @@ public class ClientGreetingController {
 	public String greetingFuture(Model model, @PathVariable("name") String name) throws InterruptedException, ExecutionException {
 	
 		logger.info("greetingFuture() invoked: " + name);
-
-		//Greeting greeting = (Greeting) helloWorldService.greetingFuture(name);
-		
+				
 		Future<Greeting> greeting = helloWorldService.greetingFuture(name);
 		
 		logger.info("greetingFuture() found: " + greeting.get().getContent());
