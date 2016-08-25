@@ -1,6 +1,6 @@
 package net.robertocrespo.microservices.client.greeting;
 
-
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +9,9 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
+
+import rx.Observable;
 
 
 /**
@@ -23,13 +26,14 @@ public class ClientGreetingService {
 	@LoadBalanced
 	protected RestTemplate restTemplate;
 
+	protected Greeting greeting;
+
 	protected String serviceUrl;
 
-	protected Logger logger = Logger.getLogger(ClientGreetingService.class
-			.getName());
+	protected Logger logger = Logger.getLogger(ClientGreetingService.class.getName());
 
 	public ClientGreetingService(String serviceUrl) {
-		this.serviceUrl = serviceUrl.startsWith("http") ? serviceUrl: "http://" + serviceUrl;
+		this.serviceUrl = serviceUrl.startsWith("http") ? serviceUrl : "http://" + serviceUrl;
 	}
 
 	/**
@@ -41,22 +45,36 @@ public class ClientGreetingService {
 	public void demoOnly() {
 		// Can't do this in the constructor because the RestTemplate injection
 		// happens afterwards.
-		logger.warning("The RestTemplate request factory is "
-				+ restTemplate.getRequestFactory());
+		logger.warning("The RestTemplate request factory is " + restTemplate.getRequestFactory());
 	}
 
+	//Synchronous Model	
 	@HystrixCommand(fallbackMethod = "greetingDefault")
-	public Greeting greeting (String name) {	
+	public Greeting greeting(String name) {
 
 		logger.info("greeting() invoked: for " + name);
-		
-		Greeting greeting =  restTemplate.getForObject(serviceUrl + "/greeting/{name}",Greeting.class, name);
-	
-		return greeting;		
+
+		return restTemplate.getForObject(serviceUrl + "/greeting/{name}", Greeting.class, name);
+
+	}
+
+	//Asynchronous Model	
+	@HystrixCommand(fallbackMethod = "greetingFutureDefault")
+	public Future<Greeting> greetingFuture(final String name) {
+		return new AsyncResult<Greeting>() {
+			public Greeting invoke() {
+				return restTemplate.getForObject(serviceUrl + "/greeting/{name}", Greeting.class, name);
+			}
+		}; 		
 	}
 	
+
 	public Greeting greetingDefault(String name) {
-	    return new Greeting("Hello World thanks to Circuit Breaker (Hystrix)");
-	  }
+		return new Greeting("Hello World thanks to Circuit Breaker (Hystrix) - SYNCHRONOUS");
+	}
 	
+	public Greeting greetingFutureDefault(String name) {
+		return new Greeting("Hello World thanks to Circuit Breaker (Hystrix) - FUTURE (ASYNCHRONOUS");
+	}
+
 }
