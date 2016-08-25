@@ -1,0 +1,23 @@
+
+# Spring properties
+spring:
+  application:
+     name: hystrix-dashboard-service  # Service registers under this name
+
+# Configure this Discovery Server
+eureka:
+  instance:
+    hostname: localhost
+  client:  # Not a client, don't register with yourself
+    registerWithEureka: false
+    serviceUrl:
+      defaultZone: http://localhost:1111/eureka/
+
+turbine:
+  aggregator:
+    clusterConfig: GREETING-CLIENT-SERVICE
+  appConfig: greeting-client-service
+
+
+server:
+  port: 4444   # HTTP (Tomcat) port
