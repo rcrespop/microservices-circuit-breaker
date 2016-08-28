@@ -15,17 +15,11 @@ import org.springframework.cloud.netflix.turbine.EnableTurbine;
  */
 
 @SpringBootApplication
-@EnableEurekaClient
 @EnableHystrixDashboard
 @EnableTurbine
 public class HystrixDashboardApp {
 
-	/**
-	 * Run the application using Spring Boot and an embedded servlet engine.
-	 * 
-	 * @param args
-	 *            Program arguments - ignored. XX
-	 */
+	
 	public static void main(String[] args) {
 
 		SpringApplication.run(HystrixDashboardApp.class, args);
