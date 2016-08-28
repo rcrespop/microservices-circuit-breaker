@@ -41,8 +41,8 @@ public class ClientGreetingController {
 
 		logger.info("greeting() invoked: " + name);
 
-	    greeting = helloWorldService.greeting(name);
-		
+		greeting = helloWorldService.greeting(name);
+
 		logger.info("greeting() found: " + greeting.getContent());
 
 		model.addAttribute("greeting", greeting.getContent());
@@ -66,20 +66,24 @@ public class ClientGreetingController {
 		return "greeting";
 
 	}
+
+	@RequestMapping("/testHystrix/{iterations}")
+	public String testHystrix(Model model, @PathVariable("iterations") int num) {
+		// Greeting greeting = null;
+		int loop = 0;
+
+		do{
+			for (int i = 0; i < num; i++) {
 	
-	@RequestMapping("/greetingbatch/{iterations}")
-	public String greetingBatch(Model model, @PathVariable("iterations") int num) {
-		Greeting greeting = null;
+				helloWorldService.greeting("Rob" + i);
+				helloWorldService.greetingFuture("Rob" + i);
+	
+			}
+			loop++;
+		}while (loop < 3);
 
-		for (int i = 0; i < num; i++) {
-
-		 greeting = helloWorldService.greeting("Rob");
-		 
-		}
-
-		logger.info("greeting() found: " + greeting.getContent());
-
-		model.addAttribute("greeting", greeting.getContent());
+		//model.addAttribute("greeting", greeting.getContent());
+		model.addAttribute("greeting", "fin batch");
 
 		return "greeting";
 
